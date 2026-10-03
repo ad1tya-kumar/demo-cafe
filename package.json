@@ -1,0 +1,25 @@
+{
+  "name": "brew-and-bloom-cafe",
+  "version": "2.0.0",
+  "description": "Brew & Bloom Café – Premium online food ordering and delivery platform for Haldia, West Bengal",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "dev": "npx serve . -l 3000",
+    "build": "echo 'Static site — no build step required'"
+  },
+  "keywords": [
+    "café",
+    "coffee",
+    "haldia",
+    "food-ordering",
+    "delivery",
+    "west bengal"
+  ],
+  "author": "Brew & Bloom Café",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

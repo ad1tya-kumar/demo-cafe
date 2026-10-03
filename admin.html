@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Brew & Bloom Café – Owner & Kitchen Administration Portal." />
+  <title>Café Management Dashboard | Brew &amp; Bloom</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .admin-stat-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+    }
+    .admin-stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--forest-green);
+      line-height: 1.1;
+      margin-top: 0.35rem;
+    }
+    .admin-tab-nav {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 0.5rem;
+    }
+    .admin-tab-btn {
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .admin-tab-btn.active {
+      background: var(--forest-green);
+      color: var(--white);
+    }
+    .order-admin-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .order-status-badge {
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      width: fit-content;
+    }
+    .status-received { background: #EBF5FB; color: #2980B9; }
+    .status-preparing { background: #FEF9E7; color: #B7950B; }
+    .status-ready { background: #E8F8F5; color: #16A085; }
+    .status-out_for_delivery { background: #FBEEE6; color: #D35400; }
+    .status-delivered { background: #EAFAF1; color: #27AE60; }
+    .status-cancelled { background: #FDEDEC; color: #C0392B; }
+
+    /* Auth Overlay */
+    .admin-auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 25, 22, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .admin-auth-box {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body style="background:var(--warm-cream);">
+
+  <!-- Staff Auth Protection Modal -->
+  <div class="admin-auth-overlay" id="adminAuthOverlay">
+    <div class="admin-auth-box">
+      <span style="font-size:3rem; display:block; margin-bottom:0.8rem;">🔒</span>
+      <h2 style="font-family:'Playfair Display',serif; color:var(--forest-green); margin-bottom:0.4rem;">Staff &amp; Admin Access</h2>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">
+        Authorized café personnel only. Enter the management PIN to unlock the live kitchen board.
+      </p>
+      <form id="adminLoginForm">
+        <input type="password" id="adminPinInput" class="form-input" placeholder="Enter Staff PIN (Default: brew2026)" style="text-align:center; font-size:1.1rem; letter-spacing:0.15em; margin-bottom:1rem;" required />
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:0.85rem;">Authenticate &amp; Enter</button>
+      </form>
+      <small style="display:block; margin-top:1rem; color:var(--vibrant-orange); font-size:0.75rem;">
+        Default demo passcode: <strong>brew2026</strong> · Configurable in production.
+      </small>
+    </div>
+  </div>
+
+  <!-- Main Navbar -->
+  <nav class="navbar scrolled" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon" aria-hidden="true">☕</span>
+        <div class="logo-text">
+          <span class="logo-name">Brew &amp; Bloom</span>
+          <span class="logo-tagline">KITCHEN &amp; DISPATCH</span>
+        </div>
+      </a>
+
+      <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="index.html" class="nav-link">Storefront</a></li>
+        <li><a href="order-tracking.html" class="nav-link">Customer Tracking</a></li>
+        <li><a href="driver.html" class="nav-link">Driver App</a></li>
+        <li><a href="#" class="nav-link active" id="adminLogoutBtn" style="color:#E74C3C;">Lock / Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container" style="margin-top:calc(var(--nav-h) + 2rem); margin-bottom:4rem;">
+
+    <!-- Dashboard Header -->
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
+      <div>
+        <p class="section-eyebrow">Café Operations</p>
+        <h1 style="color:var(--forest-green); font-size:2.2rem; font-family:'Playfair Display',serif;">Kitchen &amp; Order Dashboard</h1>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-golden" id="refreshOrdersBtn">🔄 Refresh Orders</button>
+      </div>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Total Orders</span>
+        <div class="admin-stat-num" id="statTotalOrders">0</div>
+      </div>
+      <div class="admin-stat-card">
+        <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Active in Kitchen</span>
+        <div class="admin-stat-num" id="statActiveOrders" style="color:var(--vibrant-orange);">0</div>
+      </div>
+      <div class="admin-stat-card">
+        <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Total Sales Volume</span>
+        <div class="admin-stat-num" id="statTotalSales" style="color:var(--forest-green);">₹0</div>
+      </div>
+      <div class="admin-stat-card">
+        <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Delivery Fleet Status</span>
+        <div class="admin-stat-num" style="font-size:1.25rem; margin-top:0.6rem; color:#27AE60;">3 Drivers Ready</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="admin-tab-nav">
+      <button class="admin-tab-btn active" data-tab="orders">Active Orders</button>
+      <button class="admin-tab-btn" data-tab="menu">Menu &amp; Availability</button>
+      <button class="admin-tab-btn" data-tab="history">Order History</button>
+    </div>
+
+    <!-- Tab 1: Orders -->
+    <section id="adminTabOrders">
+      <div id="ordersContainer">
+        <!-- Rendered by admin script -->
+      </div>
+    </section>
+
+    <!-- Tab 2: Menu Management -->
+    <section id="adminTabMenu" style="display:none;">
+      <div class="info-card" style="display:block; margin-bottom:2rem;">
+        <h3 style="color:var(--forest-green); margin-bottom:0.5rem;">Live Menu Availability &amp; Pricing</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1.5rem;">Toggle availability when ingredients run out. Changes take effect on the storefront immediately.</p>
+        <div id="adminMenuList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1rem;">
+          <!-- Menu items toggles -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 3: History -->
+    <section id="adminTabHistory" style="display:none;">
+      <div class="info-card" style="display:block;">
+        <h3 style="color:var(--forest-green); margin-bottom:1rem;">Delivered / Completed Orders</h3>
+        <div id="orderHistoryContainer">
+          <!-- Delivered orders -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Supabase JS CDN (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Admin Application Script -->
+  <script type="module">
+    import CONFIG from './js/config.js';
+    import { MENU_ITEMS } from './js/menu-data.js';
+    import { initSupabase, getAdminOrders, updateOrderStatus, DEMO_MODE } from './js/supabase-client.js';
+
+    function playChime() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.4);
+      } catch (e) {}
+    }
+
+    async function init() {
+      await initSupabase();
+
+      // Check session
+      if (sessionStorage.getItem('bnb_admin_authenticated') === 'true') {
+        document.getElementById('adminAuthOverlay').style.display = 'none';
+        loadDashboard();
+      }
+
+      document.getElementById('adminLoginForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pin = document.getElementById('adminPinInput')?.value;
+        if (pin === PIN_CODE) {
+          sessionStorage.setItem('bnb_admin_authenticated', 'true');
+          document.getElementById('adminAuthOverlay').style.display = 'none';
+          loadDashboard();
+        } else {
+          alert('Incorrect PIN. Default is brew2026');
+        }
+      });
+
+      document.getElementById('adminLogoutBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        sessionStorage.removeItem('bnb_admin_authenticated');
+        window.location.reload();
+      });
+
+      document.getElementById('refreshOrdersBtn')?.addEventListener('click', loadDashboard);
+
+      // Tabs
+      document.querySelectorAll('.admin-tab-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.admin-tab-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const tab = btn.dataset.tab;
+          document.getElementById('adminTabOrders').style.display = tab === 'orders' ? 'block' : 'none';
+          document.getElementById('adminTabMenu').style.display = tab === 'menu' ? 'block' : 'none';
+          document.getElementById('adminTabHistory').style.display = tab === 'history' ? 'block' : 'none';
+        });
+      });
+    }
+
+    async function loadDashboard() {
+      try {
+        allOrders = await getAdminOrders();
+      } catch (err) {
+        console.error(err);
+        allOrders = [];
+      }
+
+      renderAnalytics();
+      renderActiveOrders();
+      renderMenuManagement();
+      renderHistory();
+    }
+
+    function renderAnalytics() {
+      document.getElementById('statTotalOrders').textContent = allOrders.length;
+      const active = allOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+      document.getElementById('statActiveOrders').textContent = active;
+
+      const totalRev = allOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+      document.getElementById('statTotalSales').textContent = `₹${totalRev}`;
+    }
+
+    function renderActiveOrders() {
+      const container = document.getElementById('ordersContainer');
+      if (!container) return;
+
+      const activeOrders = allOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+
+      if (activeOrders.length === 0) {
+        container.innerHTML = `
+          <div class="info-card" style="text-align:center; padding:3rem; display:block;">
+            <span style="font-size:3rem;">✨</span>
+            <h3 style="color:var(--forest-green); margin-top:0.5rem;">No Pending Orders</h3>
+            <p style="color:var(--text-muted); font-size:0.88rem;">All incoming food orders have been processed and dispatched.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = activeOrders.map(order => `
+        <article class="order-admin-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+              <span class="order-status-badge status-${order.status}">${order.status?.replace('_', ' ')}</span>
+              <h3 style="margin-top:0.4rem; color:var(--forest-green);">Order #${order.id}</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted);">
+                Placed: ${new Date(order.created_at || Date.now()).toLocaleTimeString()} · Mode: <strong>${order.order_mode || 'Delivery'}</strong>
+              </p>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:1.4rem; font-weight:800; color:var(--forest-green);">₹${order.total_amount}</span>
+              <div style="font-size:0.78rem; color:var(--text-muted); text-transform:uppercase;">${order.payment_method?.toUpperCase()}</div>
+            </div>
+          </div>
+
+          <!-- Customer details -->
+          <div style="background:var(--warm-cream); padding:0.85rem 1.1rem; border-radius:var(--radius-sm); font-size:0.88rem;">
+            <div>👤 <strong>${order.customer_name}</strong> · 📞 <a href="tel:${order.customer_phone}" style="color:var(--vibrant-orange);">${order.customer_phone}</a></div>
+            <div style="margin-top:0.25rem;">📍 ${order.delivery_address}</div>
+            ${order.special_instructions ? `<div style="margin-top:0.35rem; color:#D35400;">📝 Note: "${order.special_instructions}"</div>` : ''}
+          </div>
+
+          <!-- Items list -->
+          <div style="border-top:1px dashed var(--border-light); padding-top:0.75rem;">
+            ${(order.items || []).map(i => `
+              <div style="display:flex; justify-content:space-between; font-size:0.88rem; margin-bottom:0.25rem;">
+                <span>${i.emoji || '🍽️'} ${i.name} × ${i.qty}</span>
+                <span>₹${i.price * i.qty}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Action bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; border-top:1px solid var(--border-light); padding-top:1rem;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <label style="font-size:0.82rem; font-weight:700; color:var(--forest-green);">Assign Driver:</label>
+              <select class="sort-select" style="padding:0.4rem 0.8rem; font-size:0.82rem;" onchange="alert('Assigned to ' + this.value)">
+                <option value="Subhajit Das">Subhajit Das (Fleet #1)</option>
+                <option value="Amitav Ghosh">Amitav Ghosh (Fleet #2)</option>
+                <option value="Rakesh Roy">Rakesh Roy (Fleet #3)</option>
+              </select>
+            </div>
+
+            <div style="display:flex; gap:0.45rem; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-golden" onclick="window.updateStatus('${order.id}', 'preparing')">👨‍🍳 Preparing</button>
+              <button class="btn btn-sm btn-primary" onclick="window.updateStatus('${order.id}', 'out_for_delivery')">🛵 Out for Delivery</button>
+              <button class="btn btn-sm btn-forest" onclick="window.updateStatus('${order.id}', 'delivered')">✅ Delivered</button>
+              <button class="btn btn-sm" style="background:#FDEDEC; color:#C0392B;" onclick="window.updateStatus('${order.id}', 'cancelled')">Cancel</button>
+              <a href="order-tracking.html?orderId=${order.id}" target="_blank" class="btn btn-sm btn-ghost" style="color:var(--espresso); border-color:var(--border-light);">View Map 🗺️</a>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('orderHistoryContainer');
+      if (!container) return;
+
+      const completed = allOrders.filter(o => o.status === 'delivered' || o.status === 'cancelled');
+      if (completed.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">No completed order history yet.</p>';
+        return;
+      }
+
+      container.innerHTML = completed.map(o => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.85rem 0; border-bottom:1px solid var(--border-light);">
+          <div>
+            <strong>#${o.id}</strong> · ${o.customer_name} (${o.customer_phone})
+            <div style="font-size:0.8rem; color:var(--text-muted);">${new Date(o.created_at || Date.now()).toLocaleDateString()} · ${o.status?.toUpperCase()}</div>
+          </div>
+          <div>
+            <strong style="color:var(--forest-green);">₹${o.total_amount}</strong>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderMenuManagement() {
+      const container = document.getElementById('adminMenuList');
+      if (!container) return;
+
+      container.innerHTML = MENU_ITEMS.map(item => `
+        <div style="background:var(--white); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong>${item.name}</strong>
+            <div style="font-size:0.82rem; color:var(--text-muted);">₹${item.price} · ${item.category}</div>
+          </div>
+          <label style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:700; color:var(--forest-green); cursor:pointer;">
+            <input type="checkbox" checked onchange="alert('${item.name} availability toggled!')" style="accent-color:var(--forest-green);" />
+            In Stock
+          </label>
+        </div>
+      `).join('');
+    }
+
+    window.updateStatus = async function(orderId, status) {
+      try {
+        await updateOrderStatus(orderId, status);
+        playChime();
+        loadDashboard();
+      } catch (err) {
+        alert('Could not update status: ' + err.message);
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

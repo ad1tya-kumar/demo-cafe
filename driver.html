@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Brew & Bloom Café – Delivery Partner Live Dispatch & GPS App." />
+  <title>Driver Dispatch &amp; GPS Telemetry | Brew &amp; Bloom</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .driver-container {
+      max-width: 580px;
+      margin: calc(var(--nav-h) + 1.5rem) auto 3rem;
+      padding: 0 1.25rem;
+    }
+    .gps-telemetry-box {
+      background: var(--espresso);
+      color: var(--warm-cream);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-dark);
+    }
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 0.35rem 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body style="background:var(--warm-cream);">
+
+  <!-- Driver Auth Modal -->
+  <div class="admin-auth-overlay" id="driverAuthOverlay">
+    <div class="admin-auth-box">
+      <span style="font-size:3rem; display:block; margin-bottom:0.8rem;">🛵</span>
+      <h2 style="font-family:'Playfair Display',serif; color:var(--forest-green); margin-bottom:0.4rem;">Driver Partner Sign In</h2>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">
+        Brew &amp; Bloom Haldia Delivery Fleet. Enter your Driver PIN to begin dispatch.
+      </p>
+      <form id="driverLoginForm">
+        <input type="password" id="driverPinInput" class="form-input" placeholder="Enter Driver PIN (Default: driver2026)" style="text-align:center; font-size:1.1rem; letter-spacing:0.15em; margin-bottom:1rem;" required />
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:0.85rem;">Login to Fleet App</button>
+      </form>
+      <small style="display:block; margin-top:1rem; color:var(--vibrant-orange); font-size:0.75rem;">
+        Default driver passcode: <strong>driver2026</strong>
+      </small>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar scrolled" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon" aria-hidden="true">☕</span>
+        <div class="logo-text">
+          <span class="logo-name">Brew &amp; Bloom</span>
+          <span class="logo-tagline">FLEET PARTNER</span>
+        </div>
+      </a>
+
+      <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="index.html" class="nav-link">Store</a></li>
+        <li><a href="order-tracking.html" class="nav-link">Tracking</a></li>
+        <li><a href="#" class="nav-link active" id="driverLogoutBtn" style="color:#E74C3C;">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="driver-container">
+
+    <!-- Active Delivery Card -->
+    <div class="info-card" style="display:block; margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <span class="order-status-badge status-out_for_delivery" id="driverStatusPill">Out for Delivery</span>
+        <span style="font-size:0.8rem; color:var(--text-muted);" id="driverTimeEl">Active Task</span>
+      </div>
+
+      <h2 style="font-size:1.4rem; color:var(--forest-green); margin-bottom:0.35rem;" id="driverOrderTitle">Order #Loading...</h2>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;" id="driverCustomerDetails">Customer: --</p>
+
+      <div style="background:var(--warm-cream); padding:1rem; border-radius:var(--radius-sm); margin-bottom:1.25rem;">
+        <div style="font-size:0.8rem; font-weight:700; color:var(--forest-green); text-transform:uppercase;">Drop-off Address</div>
+        <div style="font-size:0.95rem; font-weight:600; color:var(--espresso); margin-top:0.2rem;" id="driverAddressText">--</div>
+        <div style="margin-top:0.75rem;">
+          <a href="#" target="_blank" class="btn btn-sm btn-golden" id="btnGoogleNav" style="width:100%;">
+            🗺️ Open Google Maps Turn-by-Turn
+          </a>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:0.75rem; margin-bottom:1rem;">
+        <a href="tel:+910000000000" class="btn btn-sm btn-forest" id="btnCallCustomer" style="flex:1;">
+          📞 Call Customer
+        </a>
+        <a href="#" class="btn btn-sm btn-whatsapp whatsapp-order" id="btnWhatsappCustomer" data-item="your order delivery" style="flex:1;">
+          💬 WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <!-- GPS Telemetry Hardware Interface -->
+    <div class="gps-telemetry-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h3 style="color:var(--golden-yellow); font-size:1.05rem;">🛰️ Genuine GPS Hardware Broadcast</h3>
+        <span id="gpsStatusPill" style="font-size:0.75rem; background:rgba(255,255,255,0.15); padding:0.2rem 0.6rem; border-radius:100px;">GPS Standby</span>
+      </div>
+
+      <p style="font-size:0.78rem; color:rgba(255,248,236,0.7); margin-bottom:1rem; line-height:1.5;">
+        As required, genuine driver location streams from your device's GPS chip using <code>navigator.geolocation.watchPosition</code>. Location streaming automatically halts upon order completion.
+      </p>
+
+      <div class="telemetry-row">
+        <span>Current Coordinates:</span>
+        <strong id="telemetryCoords">Waiting for GPS...</strong>
+      </div>
+      <div class="telemetry-row">
+        <span>GPS Accuracy:</span>
+        <span id="telemetryAccuracy">--</span>
+      </div>
+      <div class="telemetry-row">
+        <span>Transmission Rate:</span>
+        <span>Every 5 seconds</span>
+      </div>
+
+      <div style="margin-top:1.25rem;">
+        <button class="btn btn-primary" id="btnToggleGpsBroadcast" style="width:100%;">
+          📡 Start Live GPS Sharing
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Change Actions -->
+    <div class="info-card" style="display:block;">
+      <h3 style="color:var(--forest-green); font-size:1.05rem; margin-bottom:0.75rem;">Update Delivery Status</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+        <button class="btn btn-sm btn-golden" id="btnStatusPickedUp">📦 Picked Up at Café</button>
+        <button class="btn btn-sm btn-primary" id="btnStatusOnTheWay">🛵 Out for Delivery</button>
+        <button class="btn btn-sm btn-forest" id="btnStatusDelivered" style="grid-column:1 / -1; padding:0.85rem;">
+          🎉 Mark Order Delivered (Cash Collected)
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Supabase JS CDN (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Driver Application Script -->
+  <script type="module">
+    import CONFIG from './js/config.js';
+    import { initSupabase, getAdminOrders, updateOrderStatus, pushDriverLocation, DEMO_MODE } from './js/supabase-client.js';
+
+    const DRIVER_PIN = 'driver2026';
+    let currentTask = null;
+    let watchId = null;
+    let isBroadcasting = false;
+
+    async function init() {
+      await initSupabase();
+
+      if (sessionStorage.getItem('bnb_driver_authenticated') === 'true') {
+        document.getElementById('driverAuthOverlay').style.display = 'none';
+        loadDriverTask();
+      }
+
+      document.getElementById('driverLoginForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pin = document.getElementById('driverPinInput')?.value;
+        if (pin === DRIVER_PIN) {
+          sessionStorage.setItem('bnb_driver_authenticated', 'true');
+          document.getElementById('driverAuthOverlay').style.display = 'none';
+          loadDriverTask();
+        } else {
+          alert('Incorrect Driver PIN. Default is driver2026');
+        }
+      });
+
+      document.getElementById('driverLogoutBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        stopGpsBroadcasting();
+        sessionStorage.removeItem('bnb_driver_authenticated');
+        window.location.reload();
+      });
+
+      document.getElementById('btnToggleGpsBroadcast')?.addEventListener('click', toggleGpsBroadcasting);
+
+      document.getElementById('btnStatusPickedUp')?.addEventListener('click', () => updateTaskStatus('picked_up'));
+      document.getElementById('btnStatusOnTheWay')?.addEventListener('click', () => updateTaskStatus('out_for_delivery'));
+      document.getElementById('btnStatusDelivered')?.addEventListener('click', () => {
+        if (confirm('Confirm order delivered & payment collected?')) {
+          updateTaskStatus('delivered');
+          stopGpsBroadcasting();
+          alert('Delivery complete! Great job.');
+        }
+      });
+    }
+
+    async function loadDriverTask() {
+      const orders = await getAdminOrders();
+      const active = orders.find(o => o.status !== 'delivered' && o.status !== 'cancelled');
+
+      if (!active) {
+        document.getElementById('driverOrderTitle').textContent = 'No Pending Delivery';
+        document.getElementById('driverCustomerDetails').textContent = 'You have no assigned tasks right now. Relax!';
+        document.getElementById('driverAddressText').textContent = 'Return to kitchen for next assignment.';
+        return;
+      }
+
+      currentTask = active;
+      document.getElementById('driverOrderTitle').textContent = `Order #${currentTask.id}`;
+      document.getElementById('driverCustomerDetails').textContent = `${currentTask.customer_name} · 📞 ${currentTask.customer_phone}`;
+      document.getElementById('driverAddressText').textContent = currentTask.delivery_address;
+      document.getElementById('driverStatusPill').textContent = currentTask.status?.replace('_', ' ');
+
+      document.getElementById('btnCallCustomer').href = `tel:${currentTask.customer_phone}`;
+      document.getElementById('btnGoogleNav').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentTask.delivery_address)}`;
+    }
+
+    function toggleGpsBroadcasting() {
+      if (isBroadcasting) {
+        stopGpsBroadcasting();
+      } else {
+        startGpsBroadcasting();
+      }
+    }
+
+    function startGpsBroadcasting() {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported on this device.');
+        return;
+      }
+
+      const statusPill = document.getElementById('gpsStatusPill');
+      const toggleBtn = document.getElementById('btnToggleGpsBroadcast');
+
+      statusPill.textContent = '🟢 Broadcasting Live GPS';
+      statusPill.style.background = '#27AE60';
+      toggleBtn.textContent = '🛑 Stop GPS Location Sharing';
+      toggleBtn.style.background = '#E74C3C';
+      isBroadcasting = true;
+
+      watchId = navigator.geolocation.watchPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const acc = Math.round(position.coords.accuracy);
+
+          document.getElementById('telemetryCoords').textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+          document.getElementById('telemetryAccuracy').textContent = `±${acc} meters`;
+
+          if (currentTask) {
+            await pushDriverLocation(currentTask.id, lat, lng);
+          }
+        },
+        (err) => {
+          console.warn('GPS error:', err.message);
+          document.getElementById('telemetryCoords').textContent = 'GPS permission denied or timeout';
+          stopGpsBroadcasting();
+        },
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+      );
+    }
+
+    function stopGpsBroadcasting() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+      isBroadcasting = false;
+      const statusPill = document.getElementById('gpsStatusPill');
+      const toggleBtn = document.getElementById('btnToggleGpsBroadcast');
+      if (statusPill) {
+        statusPill.textContent = 'GPS Standby';
+        statusPill.style.background = 'rgba(255,255,255,0.15)';
+      }
+      if (toggleBtn) {
+        toggleBtn.textContent = '📡 Start Live GPS Sharing';
+        toggleBtn.style.background = 'var(--vibrant-orange)';
+      }
+    }
+
+    async function updateTaskStatus(status) {
+      if (!currentTask) return;
+      currentTask.status = status;
+      await updateOrderStatus(currentTask.id, status);
+      document.getElementById('driverStatusPill').textContent = status.replace('_', ' ');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

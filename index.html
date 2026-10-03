@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Brew & Bloom Café – Premium specialty coffee shop & online ordering platform in Haldia, West Bengal. Artisan coffee, handcrafted food, fresh bakes & fast delivery." />
+  <meta name="keywords" content="café Haldia, coffee shop West Bengal, online food ordering Haldia, Brew Bloom Café, artisan coffee, pizza, pasta, desserts delivery" />
+  <meta property="og:title" content="Brew & Bloom Café | Haldia, West Bengal" />
+  <meta property="og:description" content="Good Coffee. Slow Moments. Beautiful Days. Order online for instant pickup or fast delivery." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#073B32" />
+  <title>Brew & Bloom Café | Haldia, West Bengal</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+  <nav class="navbar" id="navbar" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo" aria-label="Brew and Bloom Café home">
+        <span class="logo-icon" aria-hidden="true">☕</span>
+        <div class="logo-text">
+          <span class="logo-name">Brew &amp; Bloom</span>
+          <span class="logo-tagline">CAFÉ &amp; KITCHEN</span>
+        </div>
+      </a>
+
+      <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="#hero" class="nav-link active">Home</a></li>
+        <li><a href="#menu" class="nav-link">Menu</a></li>
+        <li><a href="#bestsellers" class="nav-link">Bestsellers</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#gallery" class="nav-link">Gallery</a></li>
+        <li><a href="#location" class="nav-link">Find Us</a></li>
+        <li><a href="order-tracking.html" class="nav-link">Track Order</a></li>
+        <li><a href="admin.html" class="nav-link" style="color:var(--golden-yellow);">Staff/Admin</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- Cart Trigger Button -->
+        <button class="cart-trigger-btn" id="openCartBtn" aria-label="View Shopping Cart">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span>Cart</span>
+          <span class="cart-badge" id="navCartBadge">0</span>
+        </button>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════ HERO SECTION ═══════════════════ -->
+  <section class="hero" id="hero" aria-label="Hero section">
+    <div class="hero-bg" role="img" aria-label="Cozy café interior with warm ambient lighting"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Freshly Brewed in Haldia, West Bengal</p>
+      <h1 class="hero-headline">
+        Good Coffee.<br />
+        <em>Slow Moments.</em><br />
+        Beautiful Days.
+      </h1>
+      <p class="hero-desc">Artisan single-origin coffees, handcrafted wood-fired pizzas, gourmet pastas and decadent desserts delivered fresh to your door or prepared for dine-in.</p>
+      <div class="hero-actions">
+        <a href="#menu" class="btn btn-primary btn-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+          Explore Our Menu
+        </a>
+        <a href="#" class="btn btn-ghost btn-lg whatsapp-order" data-item="our chef specials and table booking">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Order on WhatsApp
+        </a>
+      </div>
+      <div class="hero-badges">
+        <div class="badge"><span class="badge-num">100%</span><span class="badge-label">Arabica Beans</span></div>
+        <div class="badge-sep"></div>
+        <div class="badge"><span class="badge-num">30 Min</span><span class="badge-label">Avg. Delivery</span></div>
+        <div class="badge-sep"></div>
+        <div class="badge"><span class="badge-num">Open</span><span class="badge-label">7 Days a Week</span></div>
+      </div>
+    </div>
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span>scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ ANNOUNCEMENT STRIP ═══════════════════ -->
+  <div class="announcement-strip" role="marquee" aria-live="off">
+    <div class="strip-track">
+      <span>☕ Single-Origin Arabica &nbsp;·&nbsp; 🍕 Artisan Wood-Fired Pizza &nbsp;·&nbsp; 🍝 Creamy Handcrafted Pastas &nbsp;·&nbsp; 🍰 Molten Lava Cakes &nbsp;·&nbsp; 🛵 Real-Time Live Order Tracking &nbsp;·&nbsp; 🌿 Pure Vegetarian Options &nbsp;·&nbsp;</span>
+      <span aria-hidden="true">☕ Single-Origin Arabica &nbsp;·&nbsp; 🍕 Artisan Wood-Fired Pizza &nbsp;·&nbsp; 🍝 Creamy Handcrafted Pastas &nbsp;·&nbsp; 🍰 Molten Lava Cakes &nbsp;·&nbsp; 🛵 Real-Time Live Order Tracking &nbsp;·&nbsp; 🌿 Pure Vegetarian Options &nbsp;·&nbsp;</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CATEGORY PROMO BANNERS ═══════════════════ -->
+  <section class="promo-banners-section" aria-label="Signature Highlights">
+    <div class="container">
+      <div class="promo-grid">
+        <!-- Pizza Banner -->
+        <a href="#menu" class="promo-card" data-category="pizza">
+          <div class="promo-card-bg" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80');"></div>
+          <div class="promo-card-overlay"></div>
+          <span class="promo-tag">Fresh from Oven</span>
+          <div class="promo-card-content">
+            <h3 class="promo-card-title">Artisan Pizzas</h3>
+            <p class="promo-card-sub">Wood-fired thin crust &amp; mozzarella</p>
+            <span class="promo-card-cta">Order Now →</span>
+          </div>
+        </a>
+
+        <!-- Pasta Banner -->
+        <a href="#menu" class="promo-card" data-category="pizza">
+          <div class="promo-card-bg" style="background-image: url('https://images.unsplash.com/photo-1621996346565-e3d5d628169e?w=800&auto=format&fit=crop&q=80');"></div>
+          <div class="promo-card-overlay"></div>
+          <span class="promo-tag">Chef Special</span>
+          <div class="promo-card-content">
+            <h3 class="promo-card-title">Handcrafted Pasta</h3>
+            <p class="promo-card-sub">Velvety Alfredo &amp; spiced Arrabbiata</p>
+            <span class="promo-card-cta">Order Now →</span>
+          </div>
+        </a>
+
+        <!-- Smoothies Banner -->
+        <a href="#menu" class="promo-card" data-category="cold">
+          <div class="promo-card-bg" style="background-image: url('https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&auto=format&fit=crop&q=80');"></div>
+          <div class="promo-card-overlay"></div>
+          <span class="promo-tag">Cool &amp; Fresh</span>
+          <div class="promo-card-content">
+            <h3 class="promo-card-title">Frappes &amp; Shakes</h3>
+            <p class="promo-card-sub">Blended fruits, cream &amp; Oreos</p>
+            <span class="promo-card-cta">Order Now →</span>
+          </div>
+        </a>
+
+        <!-- Desserts Banner -->
+        <a href="#menu" class="promo-card" data-category="desserts">
+          <div class="promo-card-bg" style="background-image: url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop&q=80');"></div>
+          <div class="promo-card-overlay"></div>
+          <span class="promo-tag">Sweet Indulgence</span>
+          <div class="promo-card-content">
+            <h3 class="promo-card-title">Warm Desserts</h3>
+            <p class="promo-card-sub">Lava cakes, brownies &amp; cheesecakes</p>
+            <span class="promo-card-cta">Order Now →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ MAIN FOOD MENU ═══════════════════ -->
+  <section class="section menu-section" id="menu" aria-labelledby="menu-heading">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Fresh &amp; Flavourful</p>
+        <h2 class="section-title" id="menu-heading">Explore Our Food &amp; Brews</h2>
+        <p class="section-desc">Every dish and beverage is prepared fresh to order. Customize your cravings, add to cart, and enjoy seamless delivery right to your door.</p>
+      </div>
+
+      <!-- Menu Search, Filters & Sorting Toolbar -->
+      <div class="menu-toolbar">
+        <div class="menu-search-sort-row">
+          <!-- Search Box -->
+          <div class="menu-search-box">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input type="text" id="menuSearchInput" class="menu-search-input" placeholder="Search coffee, pizza, pasta, shakes, fries..." aria-label="Search menu items" />
+          </div>
+
+          <!-- Controls: Veg Toggle & Sort -->
+          <div class="menu-filter-controls">
+            <label class="veg-toggle-label" for="vegOnlyToggle">
+              <input type="checkbox" id="vegOnlyToggle" style="accent-color: #27AE60;" />
+              <span class="veg-icon-badge"><span class="veg-icon-dot"></span></span>
+              <span>Veg Only</span>
+            </label>
+
+            <select id="menuSortSelect" class="sort-select" aria-label="Sort menu items">
+              <option value="default">Featured Sort</option>
+              <option value="bestseller">⭐ Bestsellers First</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Filter Chips -->
+        <div class="menu-category-chips" id="categoryChipsContainer" role="tablist" aria-label="Menu categories">
+          <!-- Rendered dynamically from menu-data.js -->
+        </div>
+      </div>
+
+      <!-- Food Menu Grid (Dynamically rendered) -->
+      <div class="dynamic-menu-grid" id="menuGridContainer">
+        <!-- Rendered by script.js -->
+      </div>
+
+      <div style="text-align:center; margin-top:2.5rem;">
+        <p style="font-size:0.85rem; color:var(--text-muted); background:var(--white); padding:0.75rem 1.5rem; border-radius:100px; display:inline-block; border:1px solid var(--border-light);">
+          📝 <em>All items and prices are editable from <code>js/menu-data.js</code>. Demo prices in Indian Rupees (₹).</em>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ BESTSELLERS (Dark Forest Green) ═══════════════════ -->
+  <section class="section bestsellers-section" id="bestsellers" aria-labelledby="bestsellers-heading">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Crowd Favourites</p>
+        <h2 class="section-title" id="bestsellers-heading">Customer Bestsellers</h2>
+        <p class="section-desc">The standout culinary stars that our Haldia guests keep ordering again and again.</p>
+      </div>
+
+      <div class="bestsellers-grid">
+        <!-- 1 -->
+        <article class="bestseller-card">
+          <div class="bestseller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop&q=80" alt="Paneer Tikka Pizza" loading="lazy" />
+            <div class="bestseller-rank">#1 Pizza</div>
+          </div>
+          <div class="bestseller-body">
+            <h3>Paneer Tikka Pizza</h3>
+            <p>Smoky tandoori paneer, bell peppers, mozzarella &amp; makhani reduction</p>
+            <div class="bestseller-footer">
+              <span class="bestseller-price">₹360</span>
+              <button class="btn btn-sm btn-primary add-to-cart-direct" data-id="paneer-tikka-pizza">+ Add to Cart</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2 -->
+        <article class="bestseller-card">
+          <div class="bestseller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1621996346565-e3d5d628169e?w=600&auto=format&fit=crop&q=80" alt="White Sauce Pasta" loading="lazy" />
+            <div class="bestseller-rank">#2 Pasta</div>
+          </div>
+          <div class="bestseller-body">
+            <h3>White Sauce Pasta</h3>
+            <p>Silky parmesan alfredo sauce, sautéed mushrooms, herbs &amp; broccoli</p>
+            <div class="bestseller-footer">
+              <span class="bestseller-price">₹240</span>
+              <button class="btn btn-sm btn-primary add-to-cart-direct" data-id="white-sauce-pasta">+ Add to Cart</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3 -->
+        <article class="bestseller-card">
+          <div class="bestseller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1617305855058-336d24456869?w=600&auto=format&fit=crop&q=80" alt="Chocolate Lava Cake" loading="lazy" />
+            <div class="bestseller-rank">#3 Dessert</div>
+          </div>
+          <div class="bestseller-body">
+            <h3>Chocolate Lava Cake</h3>
+            <p>Warm decadent cake with streaming molten Belgian chocolate centre</p>
+            <div class="bestseller-footer">
+              <span class="bestseller-price">₹160</span>
+              <button class="btn btn-sm btn-primary add-to-cart-direct" data-id="chocolate-lava-cake">+ Add to Cart</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4 -->
+        <article class="bestseller-card">
+          <div class="bestseller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&auto=format&fit=crop&q=80" alt="Oreo Shake" loading="lazy" />
+            <div class="bestseller-rank">#4 Shake</div>
+          </div>
+          <div class="bestseller-body">
+            <h3>Oreo Shake</h3>
+            <p>Creamy vanilla ice cream churned with whole crunchy Oreo cookies</p>
+            <div class="bestseller-footer">
+              <span class="bestseller-price">₹180</span>
+              <button class="btn btn-sm btn-primary add-to-cart-direct" data-id="oreo-shake">+ Add to Cart</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ ABOUT SECTION ═══════════════════ -->
+  <section class="section about-section" id="about" aria-labelledby="about-heading">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-imagery">
+          <div class="about-img-main" role="img" aria-label="Café seating ambiance with plants"></div>
+          <div class="about-img-accent" role="img" aria-label="Pouring latte art"></div>
+          <div class="about-stat-card">
+            <span class="stat-num">5+</span>
+            <span class="stat-label">Years of Craft</span>
+          </div>
+        </div>
+
+        <div class="about-content">
+          <p class="section-eyebrow">Our Story</p>
+          <h2 class="section-title" id="about-heading">Where Every Cup &amp; Dish Tells a Story</h2>
+          <p class="about-para">Brew &amp; Bloom Café was founded with a clear passion — to bring world-class specialty coffee roasting and gourmet artisan dining to Haldia, West Bengal. We believe food should be unhurried, genuine, and shared with those who matter most.</p>
+          <p class="about-para">From ethically sourced Arabica beans to authentic hand-rolled pizza dough fermented over 24 hours, our culinary team pours uncompromised dedication into every recipe.</p>
+
+          <div class="about-values">
+            <div class="value-item">
+              <span class="value-icon" aria-hidden="true">🫘</span>
+              <div>
+                <strong>Direct-Trade Arabica Beans</strong>
+                <p>Ethically roasted in micro-batches for optimum flavour</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <span class="value-icon" aria-hidden="true">🍕</span>
+              <div>
+                <strong>Handcrafted In-House Daily</strong>
+                <p>Authentic pizzas, gourmet pastas &amp; fresh bakes made from scratch</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <span class="value-icon" aria-hidden="true">🛵</span>
+              <div>
+                <strong>Fast &amp; Insulated Delivery</strong>
+                <p>Food stays piping hot and fresh with real-time GPS tracking</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="#menu" class="btn btn-primary">Order Delicious Food</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ PHOTO GALLERY (Dark Espresso) ═══════════════════ -->
+  <section class="section gallery-section" id="gallery" aria-labelledby="gallery-heading">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Visual Tour</p>
+        <h2 class="section-title" id="gallery-heading">Moments at Brew &amp; Bloom</h2>
+        <p class="section-desc">Step inside our warm, plant-filled sanctuary and peek into our bustling kitchen.</p>
+      </div>
+
+      <div class="gallery-grid" role="list">
+        <div class="gallery-item gallery-tall" role="listitem">
+          <img class="gallery-img" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&auto=format&fit=crop&q=80" alt="Cozy café corner seating" loading="lazy" />
+          <div class="gallery-overlay">
+            <span class="gallery-label">The Bloom Reading Corner</span>
+          </div>
+        </div>
+        <div class="gallery-item" role="listitem">
+          <img class="gallery-img" src="https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=800&auto=format&fit=crop&q=80" alt="Artisan espresso pull" loading="lazy" />
+          <div class="gallery-overlay">
+            <span class="gallery-label">The Perfect Pull</span>
+          </div>
+        </div>
+        <div class="gallery-item" role="listitem">
+          <img class="gallery-img" src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80" alt="Freshly baked pizza" loading="lazy" />
+          <div class="gallery-overlay">
+            <span class="gallery-label">Wood-Fired Crust</span>
+          </div>
+        </div>
+        <div class="gallery-item gallery-wide" role="listitem">
+          <img class="gallery-img" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000&auto=format&fit=crop&q=80" alt="Sunlit café tables" loading="lazy" />
+          <div class="gallery-overlay">
+            <span class="gallery-label">Golden Morning Light</span>
+          </div>
+        </div>
+        <div class="gallery-item" role="listitem">
+          <img class="gallery-img" src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800&auto=format&fit=crop&q=80" alt="Chilled frappes" loading="lazy" />
+          <div class="gallery-overlay">
+            <span class="gallery-label">Artisan Coolers</span>
+          </div>
+        </div>
+        <div class="gallery-item" role="listitem">
+          <img class="gallery-img" src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&auto=format&fit=crop&q=80" alt="Warm brownies and cakes" loading="lazy" />
+          <div class="gallery-overlay">
+            <span class="gallery-label">Decadent Bakes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ LOCATION & HOURS ═══════════════════ -->
+  <section class="section location-section" id="location" aria-labelledby="location-heading">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Visit or Order</p>
+        <h2 class="section-title" id="location-heading">Location &amp; Opening Hours</h2>
+        <p class="section-desc">Located in the vibrant core of Haldia. Drop by for a slow coffee or order hot meals to your doorstep.</p>
+      </div>
+
+      <div class="location-grid">
+        <div class="location-info">
+          <div class="info-card">
+            <div class="info-icon" aria-hidden="true">📍</div>
+            <div>
+              <h3>Café Address</h3>
+              <p>[Sample Address], Near City Center,<br />Haldia, West Bengal – 721657</p>
+              <small style="color:var(--vibrant-orange); font-size:0.75rem;">📝 Configurable in <code>js/config.js</code></small>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon" aria-hidden="true">🕐</div>
+            <div>
+              <h3>Kitchen &amp; Café Hours</h3>
+              <div class="hours-grid">
+                <span>Mon – Fri:</span><span>8:00 AM – 9:00 PM</span>
+                <span>Saturday:</span><span>8:00 AM – 10:00 PM</span>
+                <span>Sunday:</span><span>9:00 AM – 8:00 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon" aria-hidden="true">📞</div>
+            <div>
+              <h3>Direct Contacts</h3>
+              <p>Phone: <a href="tel:+910000000000" style="color:var(--vibrant-orange); font-weight:700;">+91 00000 00000</a></p>
+              <p>Email: <a href="mailto:hello@brewandbloom.in">hello@brewandbloom.in</a></p>
+            </div>
+          </div>
+
+          <div style="margin-top:0.5rem;">
+            <a href="order-tracking.html" class="btn btn-golden" style="width:100%;">
+              🛵 Check Live Order Tracking Demo
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Leaflet Map for Haldia Café Location -->
+        <div class="map-container">
+          <div id="locationLeafletMap" role="region" aria-label="Interactive map of Brew & Bloom Café in Haldia"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ FOOTER ═══════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="#hero" class="nav-logo" aria-label="Brew and Bloom Café home">
+            <span class="logo-icon" aria-hidden="true">☕</span>
+            <div class="logo-text">
+              <span class="logo-name">Brew &amp; Bloom</span>
+              <span class="logo-tagline">CAFÉ &amp; KITCHEN</span>
+            </div>
+          </a>
+          <p class="footer-brand-desc">Good Coffee. Slow Moments. Beautiful Days. Serving premium specialty beverages and comforting culinary dishes in Haldia, West Bengal.</p>
+          <div class="social-links" aria-label="Social media links">
+            <a href="#" class="social-link whatsapp-order" data-item="general enquiry" aria-label="WhatsApp">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Ordering</h4>
+          <ul class="footer-links">
+            <li><a href="#menu">Full Food Menu</a></li>
+            <li><a href="#bestsellers">Our Bestsellers</a></li>
+            <li><a href="order-tracking.html">Track Existing Order</a></li>
+            <li><a href="#" id="footerCartLink">Open Shopping Cart</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#about">Our Story</a></li>
+            <li><a href="#gallery">Photo Gallery</a></li>
+            <li><a href="#location">Hours &amp; Location</a></li>
+            <li><a href="driver.html">Driver Portal</a></li>
+            <li><a href="admin.html">Café Admin Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Visit Us</h4>
+          <address class="footer-address">
+            <p>[Sample Address], Haldia, WB – 721657</p>
+            <p>Mon–Fri: 8:00 AM – 9:00 PM</p>
+            <p>Sat–Sun: 8:00 AM – 10:00 PM</p>
+            <p style="color:var(--golden-yellow); font-weight:700; margin-top:0.5rem;">Delivery Radius: 10 KM</p>
+          </address>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Brew &amp; Bloom Café, Haldia. All rights reserved.</p>
+        <p class="footer-disclaimer">This is a demonstration food ordering platform. All menu items, pricing, delivery simulations, addresses and credentials are demo content for illustration and operational readiness.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════ CART DRAWER ═══════════════════ -->
+  <div class="cart-drawer-backdrop" id="cartDrawerBackdrop" aria-hidden="true"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping Cart Drawer" role="dialog" aria-modal="true">
+    <div class="cart-drawer-header">
+      <h3 class="cart-drawer-title">
+        <span>🛒</span>
+        <span>Your Order</span>
+      </h3>
+      <button class="cart-close-btn" id="closeCartBtn" aria-label="Close Shopping Cart">✕</button>
+    </div>
+
+    <div class="cart-drawer-body" id="cartDrawerItems">
+      <!-- Items dynamically populated by script.js -->
+    </div>
+
+    <div class="cart-drawer-footer" id="cartDrawerFooter">
+      <div class="cart-summary-line">
+        <span>Items Subtotal</span>
+        <span id="cartDrawerSubtotal">₹0</span>
+      </div>
+      <div class="cart-summary-line">
+        <span>GST Tax (5%)</span>
+        <span id="cartDrawerTax">₹0</span>
+      </div>
+      <div class="cart-summary-line">
+        <span>Est. Delivery</span>
+        <span id="cartDrawerDelivery">₹30</span>
+      </div>
+      <div class="cart-total-line">
+        <span>Total Payable</span>
+        <span id="cartDrawerTotal">₹0</span>
+      </div>
+
+      <button class="btn btn-primary checkout-btn" id="proceedCheckoutBtn">
+        Proceed to Checkout →
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════ CHECKOUT MODAL ═══════════════════ -->
+  <div class="checkout-modal-backdrop" id="checkoutModalBackdrop" aria-hidden="true">
+    <div class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
+      <div class="checkout-modal-header">
+        <h3 class="checkout-modal-title" id="checkoutModalTitle">Checkout &amp; Delivery Details</h3>
+        <button class="cart-close-btn" id="closeCheckoutBtn" aria-label="Close Checkout">✕</button>
+      </div>
+
+      <div class="checkout-modal-body">
+        <!-- Delivery Mode Switcher -->
+        <div class="delivery-mode-switcher" role="radiogroup" aria-label="Order Mode">
+          <button class="mode-btn active" data-mode="delivery" type="button">
+            <span>🛵</span>
+            <span>Home Delivery</span>
+          </button>
+          <button class="mode-btn" data-mode="takeaway" type="button">
+            <span>🛍️</span>
+            <span>Self Pickup / Takeaway</span>
+          </button>
+          <button class="mode-btn" data-mode="dinein" type="button">
+            <span>🍽️</span>
+            <span>Dine-In at Café</span>
+          </button>
+        </div>
+
+        <!-- Location Picker Row -->
+        <div class="location-picker-row" id="locationPickerRow">
+          <button class="loc-btn active" id="btnUseGeolocation" type="button">
+            <span>📍</span>
+            <span>Detect My Current Location</span>
+          </button>
+          <button class="loc-btn" id="btnEnterManualAddress" type="button">
+            <span>✏️</span>
+            <span>Enter Address Manually</span>
+          </button>
+        </div>
+
+        <!-- Leaflet Map Preview inside Checkout -->
+        <div class="checkout-map-container" id="checkoutMapContainer">
+          <div id="checkoutLeafletMap" style="width:100%; height:100%;"></div>
+        </div>
+
+        <div class="map-distance-badge" id="mapDistanceBadge">
+          <span id="mapDistanceText">Calculating delivery distance from café...</span>
+          <span id="mapEtaText">ETA: ~30-40 min</span>
+        </div>
+
+        <!-- Checkout Form -->
+        <form id="checkoutForm" novalidate>
+          <div class="checkout-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="custName">Full Name *</label>
+              <input type="text" id="custName" class="form-input" placeholder="e.g. Rahul Sen" required />
+              <div class="form-error-msg">Please enter your name</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custPhone">Mobile Number (10 digits) *</label>
+              <input type="tel" id="custPhone" class="form-input" placeholder="e.g. 9876543210" pattern="[6-9][0-9]{9}" required />
+              <div class="form-error-msg">Enter a valid 10-digit Indian phone number</div>
+            </div>
+
+            <div class="form-group form-group-full" id="addressFieldGroup">
+              <label class="form-label" for="custAddress">Flat / House No. / Building *</label>
+              <input type="text" id="custAddress" class="form-input" placeholder="e.g. Flat 3B, Sunshine Apartments" required />
+              <div class="form-error-msg">Please enter building details</div>
+            </div>
+
+            <div class="form-group" id="localityFieldGroup">
+              <label class="form-label" for="custLocality">Locality / Street *</label>
+              <input type="text" id="custLocality" class="form-input" placeholder="e.g. City Centre Road, Haldia" required />
+              <div class="form-error-msg">Please enter locality</div>
+            </div>
+
+            <div class="form-group" id="landmarkFieldGroup">
+              <label class="form-label" for="custLandmark">Landmark (Optional)</label>
+              <input type="text" id="custLandmark" class="form-input" placeholder="e.g. Near City Clock Tower" />
+            </div>
+
+            <div class="form-group" id="pincodeFieldGroup">
+              <label class="form-label" for="custPin">PIN Code *</label>
+              <input type="text" id="custPin" class="form-input" placeholder="721657" pattern="[0-9]{6}" required />
+              <div class="form-error-msg">Enter a valid 6-digit PIN code</div>
+            </div>
+
+            <!-- Table / Seating info for Dine-in (Shown only when Dine-In selected) -->
+            <div class="form-group form-group-full" id="tableFieldGroup" style="display:none;">
+              <label class="form-label" for="custTable">Table Number / Seating Preference (Optional)</label>
+              <input type="text" id="custTable" class="form-input" placeholder="e.g. Table 4 / Window corner booth" />
+            </div>
+
+            <div class="form-group form-group-full">
+              <label class="form-label" for="custNotes">Delivery / Cooking Instructions (Optional)</label>
+              <input type="text" id="custNotes" class="form-input" placeholder="e.g. Less spicy, ring the doorbell twice, please keep at the door" />
+            </div>
+          </div>
+
+          <!-- Payment Options -->
+          <div class="payment-selector">
+            <label class="form-label">Payment Method *</label>
+            <div class="payment-options-grid">
+              <label class="payment-card-option active">
+                <input type="radio" name="paymentMethod" value="Cash on Delivery" checked style="accent-color:var(--vibrant-orange);" />
+                <span class="payment-icon">💵</span>
+                <div>
+                  <div class="payment-name">Cash on Delivery / Pickup</div>
+                  <div class="payment-desc">Pay cash or UPI upon delivery</div>
+                </div>
+              </label>
+
+              <label class="payment-card-option">
+                <input type="radio" name="paymentMethod" value="UPI Payment" style="accent-color:var(--vibrant-orange);" />
+                <span class="payment-icon">📱</span>
+                <div>
+                  <div class="payment-name">UPI Payment</div>
+                  <div class="payment-desc">Pay via GPay, PhonePe, Paytm on confirmation</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Final Review Box -->
+          <div class="checkout-summary-box">
+            <div class="checkout-summary-title">Order Bill Breakdown</div>
+            <div class="cart-summary-line">
+              <span>Items Total:</span>
+              <strong id="chkSummarySubtotal">₹0</strong>
+            </div>
+            <div class="cart-summary-line">
+              <span>GST Tax (5%):</span>
+              <span id="chkSummaryTax">₹0</span>
+            </div>
+            <div class="cart-summary-line">
+              <span>Delivery Fee:</span>
+              <span id="chkSummaryDelivery">₹30</span>
+            </div>
+            <div class="cart-total-line" style="margin-bottom:0;">
+              <span>Grand Total:</span>
+              <span id="chkSummaryTotal">₹0</span>
+            </div>
+          </div>
+
+          <!-- WhatsApp Checkout Button -->
+          <button type="submit" class="btn btn-whatsapp checkout-btn" id="confirmOrderBtn" style="font-size:1.1rem; padding:1.05rem; width:100%;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right:4px;">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            <span id="confirmOrderBtnText">Place Order on WhatsApp</span>
+          </button>
+
+          <p class="whatsapp-checkout-help" style="font-size:0.85rem; color:var(--text-muted); margin-top:0.6rem; text-align:center;">
+            Your order details will open in WhatsApp. Review your order and press Send to confirm it with the café.
+          </p>
+
+          <p class="whatsapp-checkout-disclaimer" style="font-size:0.75rem; color:#856404; background:#FFF3CD; border:1px solid #FFEEBA; padding:0.65rem 0.95rem; border-radius:var(--radius-sm); margin-top:0.75rem; text-align:center; line-height:1.45;">
+            ⚠️ <strong>Please Note:</strong> Opening WhatsApp does not place the order automatically. Your order is confirmed only after you tap <strong>Send</strong> in WhatsApp and the café acknowledges it with your estimated delivery time.
+          </p>
+        </form>
+
+        <!-- Post-WhatsApp-Open Status Card (Shown after user triggers WhatsApp) -->
+        <div id="whatsappSentDialog" style="display:none; text-align:center; padding:1.5rem 0;">
+          <div style="font-size:3.2rem; margin-bottom:0.5rem;">📱</div>
+          <h3 style="color:var(--forest-green); font-size:1.4rem; margin-bottom:0.35rem;">WhatsApp Order Opened</h3>
+          <p style="font-size:1rem; font-weight:700; color:var(--espresso); margin-bottom:0.5rem;" id="dialogOrderId">Order ID: BB-123456</p>
+          <div style="background:var(--warm-cream); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:1rem 1.25rem; max-width:480px; margin:0 auto 1.25rem; text-align:left; font-size:0.88rem; line-height:1.6; color:var(--text-dark);">
+            <p><strong>Next Step:</strong> Please switch to your WhatsApp window/app and tap <strong>Send</strong>.</p>
+            <p style="color:var(--text-muted); font-size:0.82rem; margin-top:0.4rem;">
+              The café team at Haldia will receive your message, confirm product availability, and reply with your estimated delivery/pickup time.
+            </p>
+          </div>
+          <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+            <a href="#" id="dialogReopenWaLink" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-whatsapp">
+              📲 Re-open WhatsApp
+            </a>
+            <button type="button" class="btn btn-sm btn-forest" id="dialogDoneBtn">
+              Return to Store
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Back To Top -->
+  <button class="back-to-top" id="backToTop" aria-label="Scroll to top of page">↑</button>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Supabase JS CDN (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Application Logic (ES Module) -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>
