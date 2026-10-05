@@ -786,7 +786,23 @@ async function handleOrderSubmit(e) {
   }
 
   // 6. Generate unique order reference (e.g. BB-123456)
-  const orderRef = 'BB-' + Math.floor(100000 + Math.random() * 900000);
+  const orderRef = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+
+  // Save Order ID to localStorage for tracking page lookup
+  localStorage.setItem('bnb_last_order_id', orderRef);
+  localStorage.setItem('bnb_last_order_data', JSON.stringify({
+    orderId: orderRef,
+    items: snapshot.items.map(i => ({ name: i.name, qty: i.qty, price: i.price, emoji: i.emoji })),
+    subtotal: snapshot.subtotal,
+    deliveryCharge: isDelivery ? snapshot.deliveryCharge : 0,
+    gstAmount: snapshot.gstAmount,
+    total: isDelivery ? snapshot.total : (snapshot.subtotal + snapshot.gstAmount),
+    orderType: state.deliveryMode,
+    customerName: nameVal,
+    customerPhone: phoneVal,
+    timestamp: new Date().toISOString(),
+    status: 'received'
+  }));
 
   // 7. Calculate totals
   const subtotal = snapshot.subtotal;
@@ -974,8 +990,13 @@ function initNavbarAndScroll() {
    APP INITIALIZATION
    ══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize Supabase backend (or fallback to demo mode)
-  await initSupabase();
+  // Initialize Supabase backend (or fallback to demo mode).
+  // Wrapped in try/catch so any failure doesn't block cart, menu, or checkout.
+  try {
+    await initSupabase();
+  } catch (err) {
+    console.warn('[BrewBloom] initSupabase threw unexpectedly, continuing in demo mode.', err);
+  }
 
   initNavbarAndScroll();
   initWhatsAppLinks();

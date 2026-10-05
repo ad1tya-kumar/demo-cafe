@@ -23,7 +23,7 @@ function assert(condition, testName) {
 // ── Test 1: Configured WhatsApp Variable ───────────────────
 console.log('Test 1: Restaurant WhatsApp Number Configuration');
 assert(typeof RESTAURANT_WHATSAPP_NUMBER === 'string', 'RESTAURANT_WHATSAPP_NUMBER is exported as string');
-assert(RESTAURANT_WHATSAPP_NUMBER === '919876543210', 'RESTAURANT_WHATSAPP_NUMBER has placeholder 919876543210');
+assert(RESTAURANT_WHATSAPP_NUMBER === '917280959126', 'RESTAURANT_WHATSAPP_NUMBER has configured number 917280959126');
 assert(/^\d+$/.test(RESTAURANT_WHATSAPP_NUMBER), 'WhatsApp number contains only digits (no +, spaces, dashes)');
 assert(CONFIG.cafe.whatsapp === RESTAURANT_WHATSAPP_NUMBER, 'CONFIG.cafe.whatsapp matches RESTAURANT_WHATSAPP_NUMBER');
 

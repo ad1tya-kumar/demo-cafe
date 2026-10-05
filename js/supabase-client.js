@@ -18,7 +18,11 @@ export let DEMO_MODE = true;
 export async function initSupabase() {
   if (_supabase) return _supabase;
 
-  const { url, anonKey } = CONFIG.supabase;
+  // Guard: CONFIG.supabase may not exist (e.g. GitHub Pages / static deploy)
+  const supabaseConfig = CONFIG.supabase || {};
+  const url = supabaseConfig.url;
+  const anonKey = supabaseConfig.anonKey;
+
   if (!url || !anonKey) {
     console.info('[BrewBloom] Supabase not configured → running in demo mode.');
     DEMO_MODE = true;
@@ -41,6 +45,7 @@ export async function initSupabase() {
 }
 
 export function getClient() { return _supabase; }
+
 
 // ── ORDER FUNCTIONS ─────────────────────────────────────────
 

@@ -46,7 +46,7 @@
     <div class="info-card" id="orderSearchCard" style="margin-bottom:2rem; background:var(--white);">
       <div style="flex:1;">
         <h3 style="margin-bottom:0.5rem; color:var(--forest-green);">Track Your Order</h3>
-        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">Enter your Order ID (e.g. <code>BNB...</code>) provided on checkout.</p>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">Enter your Order ID (e.g. <code>ORD-1234</code>) provided on checkout.</p>
         <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
           <input type="text" id="manualOrderIdInput" class="form-input" placeholder="Enter Order ID" style="flex:1; min-width:200px;" />
           <button class="btn btn-primary" id="trackOrderBtn">Track Now</button>
@@ -212,100 +212,129 @@
   <!-- Order Tracking Script Module -->
   <script type="module">
     import CONFIG from './js/config.js';
-    import { initSupabase, getOrder, subscribeToDriverLocation, DEMO_MODE, updateOrderStatus } from './js/supabase-client.js';
 
     const STAGES = [
-      'received',
-      'preparing',
-      'ready',
-      'picked_up',
-      'out_for_delivery',
-      'delivered'
+      { id: 'received', label: 'Order Received', icon: '📋' },
+      { id: 'preparing', label: 'Preparing Food', icon: '👨‍🍳' },
+      { id: 'ready', label: 'Ready for Pickup', icon: '📦' },
+      { id: 'picked_up', label: 'Picked Up', icon: '🛵' },
+      { id: 'out_for_delivery', label: 'Out for Delivery', icon: '🚀' },
+      { id: 'delivered', label: 'Delivered', icon: '✅' },
     ];
 
+    let currentStageIndex = 0;
     let currentOrder = null;
+    let driverProgress = 0.2;
     let trackingMap = null;
-    let cafeMarker = null;
-    let userMarker = null;
     let driverMarker = null;
-    let routePolyline = null;
     let driverAnimationTimer = null;
-    let driverProgress = 0.2; // 20% along route
 
-    async function init() {
-      await initSupabase();
-
+    function init() {
+      // Check URL params first
       const urlParams = new URLSearchParams(window.location.search);
       let orderId = urlParams.get('orderId');
 
+      // If no URL param, check if there's a stored order
       if (!orderId) {
-        // Check localStorage demo orders for most recent
-        const raw = localStorage.getItem('bnb_demo_orders_v2');
-        if (raw) {
-          try {
-            const list = JSON.parse(raw);
-            if (list && list.length > 0) orderId = list[0].id;
-          } catch {}
-        }
+        orderId = localStorage.getItem('bnb_last_order_id');
       }
 
       if (orderId) {
-        loadOrder(orderId);
+        lookupOrder(orderId);
+        // Pre-fill the input
+        const inp = document.getElementById('manualOrderIdInput');
+        if (inp) inp.value = orderId;
       } else {
-        document.getElementById('displayOrderId').textContent = 'No Order Selected';
-        document.getElementById('displayOrderCustomer').textContent = 'Please enter an Order ID above to track your food.';
+        showNoOrder();
       }
 
+      // Track button handler
       document.getElementById('trackOrderBtn')?.addEventListener('click', () => {
         const inp = document.getElementById('manualOrderIdInput')?.value.trim();
         if (inp) {
-          window.location.href = `order-tracking.html?orderId=${inp}`;
+          lookupOrder(inp);
         }
       });
 
-      // Demo stage controls
-      document.getElementById('btnSimulateNextStage')?.addEventListener('click', advanceDemoStage);
+      // Enter key on input
+      document.getElementById('manualOrderIdInput')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const inp = e.target.value.trim();
+          if (inp) lookupOrder(inp);
+        }
+      });
+
+      // Demo controls
+      document.getElementById('btnSimulateNextStage')?.addEventListener('click', advanceStage);
       document.getElementById('btnSimulateRide')?.addEventListener('click', startScooterSimulation);
     }
 
-    async function loadOrder(orderId) {
-      try {
-        currentOrder = await getOrder(orderId);
-      } catch (err) {
-        console.error(err);
+    function showNoOrder() {
+      document.getElementById('displayOrderId').textContent = 'No Order Found';
+      document.getElementById('displayOrderCustomer').textContent = 'Enter your Order ID above (e.g. ORD-1234) to track your delivery.';
+      document.getElementById('displayOrderAddress').textContent = '';
+      document.getElementById('trackingContentArea').style.display = 'none';
+      document.getElementById('orderSearchCard').style.display = 'block';
+    }
+
+    function lookupOrder(orderId) {
+      const storedId = localStorage.getItem('bnb_last_order_id');
+      const storedData = localStorage.getItem('bnb_last_order_data');
+
+      if (storedId && storedId === orderId && storedData) {
+        try {
+          currentOrder = JSON.parse(storedData);
+          currentStageIndex = 0;
+          showTracking(currentOrder);
+        } catch {
+          showOrderNotFound(orderId);
+        }
+      } else {
+        showOrderNotFound(orderId);
       }
+    }
 
-      if (!currentOrder) {
-        document.getElementById('displayOrderId').textContent = 'Order Not Found';
-        document.getElementById('displayOrderCustomer').textContent = `Could not find order #${orderId}. Please check the ID.`;
-        return;
+    function showOrderNotFound(orderId) {
+      document.getElementById('trackingContentArea').style.display = 'none';
+      document.getElementById('displayOrderId').textContent = 'Order Not Found';
+      document.getElementById('displayOrderCustomer').textContent = `No order with ID "${orderId}" was found. Please check your Order ID and try again.`;
+      document.getElementById('displayOrderAddress').textContent = '';
+      // Show a toast-like message
+      const searchCard = document.getElementById('orderSearchCard');
+      if (searchCard) {
+        const existing = searchCard.querySelector('.tracking-error-msg');
+        if (existing) existing.remove();
+        const errDiv = document.createElement('div');
+        errDiv.className = 'tracking-error-msg';
+        errDiv.style.cssText = 'margin-top:1rem; padding:0.75rem 1rem; background:#FFF3CD; border:1px solid #FFEEBA; border-radius:8px; color:#856404; font-size:0.9rem;';
+        errDiv.innerHTML = `⚠️ <strong>Order ID "${orderId}" not found.</strong> Make sure you've placed an order from this browser. The Order ID is saved locally when you checkout.`;
+        searchCard.appendChild(errDiv);
       }
+    }
 
-      // Populate details
-      document.getElementById('displayOrderId').textContent = `Order #${currentOrder.id}`;
-      document.getElementById('displayOrderCustomer').textContent = `Customer: ${currentOrder.customer_name} (${currentOrder.customer_phone})`;
-      document.getElementById('displayOrderAddress').textContent = `Delivery To: ${currentOrder.delivery_address}`;
-      document.getElementById('orderTotalDisplay').textContent = `₹${currentOrder.total_amount}`;
-      document.getElementById('distanceRemainingDisplay').textContent = `${currentOrder.customer_distance_km || 2.5} km`;
+    function showTracking(order) {
+      document.getElementById('trackingContentArea').style.display = 'block';
 
+      // Populate header
+      document.getElementById('displayOrderId').textContent = `Order #${order.orderId}`;
+      document.getElementById('displayOrderCustomer').textContent = `Customer: ${order.customerName} (${order.customerPhone})`;
+
+      const orderTypeLabels = { delivery: 'Home Delivery', takeaway: 'Takeaway', dinein: 'Dine-In' };
+      document.getElementById('displayOrderAddress').textContent = `Order Type: ${orderTypeLabels[order.orderType] || order.orderType}`;
+
+      document.getElementById('orderTotalDisplay').textContent = `₹${order.total}`;
+
+      // Mode badge
       const badge = document.getElementById('trackingModeBadge');
       if (badge) {
-        if (currentOrder.is_demo || DEMO_MODE) {
-          badge.className = 'demo-tracking-pill';
-          badge.textContent = '⚠️ DEMO TRACKING — NOT LIVE GPS';
-        } else {
-          badge.className = 'demo-tracking-pill';
-          badge.style.background = '#27AE60';
-          badge.style.color = '#FFF';
-          badge.textContent = '🟢 LIVE GPS TELEMETRY ACTIVE';
-          document.getElementById('demoControlsBox').style.display = 'none';
-        }
+        badge.className = 'demo-tracking-pill';
+        badge.innerHTML = '<span>🎮 SIMULATED TRACKING DEMO</span>';
       }
 
-      // Render items list
+      // Render order items
       const itemsList = document.getElementById('trackingItemsList');
-      if (itemsList && currentOrder.items) {
-        itemsList.innerHTML = currentOrder.items.map(i => `
+      if (itemsList && order.items) {
+        itemsList.innerHTML = order.items.map(i => `
           <div style="display:flex; justify-content:space-between; font-size:0.9rem; padding:0.4rem 0; border-bottom:1px dashed var(--border-light);">
             <span>${i.emoji || '🍽️'} <strong>${i.name}</strong> × ${i.qty}</span>
             <span>₹${i.price * i.qty}</span>
@@ -313,45 +342,58 @@
         `).join('');
       }
 
-      updateTimeline(currentOrder.status || 'received');
-      initMap(currentOrder);
-
-      // Subscribe to real driver updates if not demo
-      if (!currentOrder.is_demo && !DEMO_MODE) {
-        subscribeToDriverLocation(currentOrder.id, (loc) => {
-          if (driverMarker) {
-            driverMarker.setLatLng([loc.lat, loc.lng]);
-          }
-        });
-      }
+      updateTimeline(0);
+      initMap();
     }
 
-    function updateTimeline(status) {
-      const idx = STAGES.indexOf(status);
-      const safeIdx = idx === -1 ? 0 : idx;
+    function updateTimeline(stageIdx) {
+      currentStageIndex = Math.min(stageIdx, STAGES.length - 1);
 
-      STAGES.forEach((st, i) => {
-        const el = document.getElementById(`stage-${st}`);
+      STAGES.forEach((stage, i) => {
+        const el = document.getElementById(`stage-${stage.id}`);
         if (!el) return;
         el.classList.remove('active', 'completed');
-        if (i < safeIdx) el.classList.add('completed');
-        else if (i === safeIdx) el.classList.add('active');
+        if (i < currentStageIndex) el.classList.add('completed');
+        else if (i === currentStageIndex) el.classList.add('active');
       });
 
       const progressBar = document.getElementById('timelineProgressBar');
       if (progressBar) {
-        const percent = Math.min(100, Math.max(10, Math.round((safeIdx / (STAGES.length - 1)) * 100)));
+        const percent = Math.min(100, Math.max(10, Math.round((currentStageIndex / (STAGES.length - 1)) * 100)));
         progressBar.style.width = `${percent}%`;
       }
+
+      // Update ETA based on stage
+      const etaMins = Math.max(2, 25 - (currentStageIndex * 5));
+      document.getElementById('etaMinutesDisplay').textContent = `${etaMins} mins`;
     }
 
-    function initMap(order) {
+    function advanceStage() {
+      if (!currentOrder) return;
+      const nextIdx = Math.min(currentStageIndex + 1, STAGES.length - 1);
+      updateTimeline(nextIdx);
+
+      // Update stored status
+      const data = JSON.parse(localStorage.getItem('bnb_last_order_data') || '{}');
+      data.status = STAGES[nextIdx].id;
+      localStorage.setItem('bnb_last_order_data', JSON.stringify(data));
+    }
+
+    function initMap() {
       if (typeof L === 'undefined') return;
+      const mapEl = document.getElementById('liveTrackingMap');
+      if (!mapEl) return;
+
+      // Remove existing map instance if any
+      if (trackingMap) {
+        trackingMap.remove();
+        trackingMap = null;
+      }
 
       const cafeLat = CONFIG.restaurant.lat;
       const cafeLng = CONFIG.restaurant.lng;
-      const userLat = order.customer_lat || (cafeLat + 0.018);
-      const userLng = order.customer_lng || (cafeLng + 0.015);
+      const userLat = cafeLat + 0.018;
+      const userLng = cafeLng + 0.015;
 
       trackingMap = L.map('liveTrackingMap').setView([cafeLat, cafeLng], 13);
 
@@ -367,7 +409,7 @@
         iconSize: [115, 32],
         iconAnchor: [57, 16],
       });
-      cafeMarker = L.marker([cafeLat, cafeLng], { icon: cafeIcon })
+      L.marker([cafeLat, cafeLng], { icon: cafeIcon })
         .addTo(trackingMap)
         .bindPopup('<b>Brew & Bloom Café</b><br />Kitchen & Roastry, Haldia');
 
@@ -378,48 +420,29 @@
         iconSize: [36, 36],
         iconAnchor: [18, 18],
       });
-      userMarker = L.marker([userLat, userLng], { icon: userIcon })
+      L.marker([userLat, userLng], { icon: userIcon })
         .addTo(trackingMap)
-        .bindPopup(`<b>Delivery Destination</b><br />${order.delivery_address}`);
+        .bindPopup('<b>Delivery Destination</b>');
 
-      // Route Polyline
-      const startCoord = [cafeLat, cafeLng];
-      const endCoord = [userLat, userLng];
-
-      routePolyline = L.polyline([startCoord, endCoord], {
-        color: '#FF7629',
-        weight: 4,
-        dashArray: '8, 8',
-        opacity: 0.85
+      // Route line
+      L.polyline([[cafeLat, cafeLng], [userLat, userLng]], {
+        color: '#FF7629', weight: 4, dashArray: '8, 8', opacity: 0.85
       }).addTo(trackingMap);
 
-      // Driver Scooter Marker (starting ~30% along the path)
+      // Driver scooter marker
       const driverLat = cafeLat + (userLat - cafeLat) * driverProgress;
       const driverLng = cafeLng + (userLng - cafeLng) * driverProgress;
-
       const scooterIcon = L.divIcon({
         className: 'custom-leaflet-marker',
         html: '<div style="background:#FFC247; color:#172421; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; border:3px solid #073B32; box-shadow:0 4px 16px rgba(0,0,0,0.45); animation:pulse 1.8s infinite;">🛵</div>',
         iconSize: [40, 40],
         iconAnchor: [20, 20],
       });
-
       driverMarker = L.marker([driverLat, driverLng], { icon: scooterIcon })
         .addTo(trackingMap)
-        .bindPopup('<b>Subhajit Das</b><br />Brew & Bloom Delivery Fleet');
+        .bindPopup('<b>Delivery Partner</b><br />Brew & Bloom Fleet');
 
-      trackingMap.fitBounds([startCoord, endCoord], { padding: [50, 50] });
-    }
-
-    async function advanceDemoStage() {
-      if (!currentOrder) return;
-      const currentIdx = STAGES.indexOf(currentOrder.status || 'received');
-      const nextIdx = (currentIdx + 1) % STAGES.length;
-      const nextStatus = STAGES[nextIdx];
-
-      currentOrder.status = nextStatus;
-      await updateOrderStatus(currentOrder.id, nextStatus);
-      updateTimeline(nextStatus);
+      trackingMap.fitBounds([[cafeLat, cafeLng], [userLat, userLng]], { padding: [50, 50] });
     }
 
     function startScooterSimulation() {
@@ -435,9 +458,9 @@
 
       const cafeLat = CONFIG.restaurant.lat;
       const cafeLng = CONFIG.restaurant.lng;
-      const userLat = currentOrder.customer_lat || (cafeLat + 0.018);
-      const userLng = currentOrder.customer_lng || (cafeLng + 0.015);
-      const totalDist = currentOrder.customer_distance_km || 2.5;
+      const userLat = cafeLat + 0.018;
+      const userLng = cafeLng + 0.015;
+      const totalDist = 2.5;
 
       driverAnimationTimer = setInterval(() => {
         driverProgress += 0.02;
@@ -446,9 +469,7 @@
           clearInterval(driverAnimationTimer);
           driverAnimationTimer = null;
           document.getElementById('btnSimulateRide').textContent = 'Drive Scooter 🛵';
-          currentOrder.status = 'delivered';
-          updateOrderStatus(currentOrder.id, 'delivered');
-          updateTimeline('delivered');
+          updateTimeline(STAGES.length - 1); // Delivered
         }
 
         const lat = cafeLat + (userLat - cafeLat) * driverProgress;

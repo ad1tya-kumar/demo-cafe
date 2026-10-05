@@ -14,7 +14,7 @@
  * Example for India: '919876543210'
  * ⚠️ Replace this placeholder with the café's actual WhatsApp number.
  */
-export const RESTAURANT_WHATSAPP_NUMBER = '919876543210'; // ← EDIT THIS VARIABLE
+export const RESTAURANT_WHATSAPP_NUMBER = '917280959126'; // ← EDIT THIS VARIABLE
 
 const CONFIG = {
 

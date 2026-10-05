@@ -21,6 +21,7 @@
 
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="style.css" />
+  <style>html { scroll-behavior: smooth; }</style>
 </head>
 <body>
 
@@ -444,9 +445,18 @@
           </div>
         </div>
 
-        <!-- Interactive Leaflet Map for Haldia Café Location -->
+        <!-- Google Maps iframe for Haldia, West Bengal -->
         <div class="map-container">
-          <div id="locationLeafletMap" role="region" aria-label="Interactive map of Brew & Bloom Café in Haldia"></div>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58975.46477044287!2d88.0246!3d22.0667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a02b0d5d2e1e0e9%3A0x3c38b8e3c0c4c0e9!2sHaldia%2C%20West%20Bengal!5e0!3m2!1sen!2sin!4v1696000000000!5m2!1sen!2sin"
+            width="100%"
+            height="100%"
+            style="border:0; border-radius: var(--radius-md, 12px);"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Haldia, West Bengal on Google Maps"
+          ></iframe>
         </div>
       </div>
     </div>
@@ -746,13 +756,26 @@
   <!-- Back To Top -->
   <button class="back-to-top" id="backToTop" aria-label="Scroll to top of page">↑</button>
 
-  <!-- Leaflet Map JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Leaflet Map JS (for checkout + tracking maps) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
 
-  <!-- Supabase JS CDN (v2) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase CDN — loaded deferred so it never blocks the page -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
-  <!-- Application Logic (ES Module) -->
-  <script type="module" src="script.js"></script>
+  <!--
+    ╔══════════════════════════════════════════════════════════╗
+    ║  SELF-CONTAINED BOOTSTRAP — no ES module imports        ║
+    ║  Powers: Add to Cart, Cart Drawer, WhatsApp Checkout    ║
+    ║  Works on GitHub Pages without any build step or CDN    ║
+    ╚══════════════════════════════════════════════════════════╝
+    This plain script runs BEFORE the ES module below and is
+    the guaranteed working implementation. The ES module (script.js)
+    adds the Leaflet checkout map and Supabase admin features.
+  -->
+  <script src="js/app-bootstrap.js"></script>
+
+  <!-- ES Module (advanced features: Leaflet checkout map, admin panel) -->
+  <!-- If this fails due to browser caching, the bootstrap above still works -->
+  <script type="module" src="script.js?v=2"></script>
 </body>
 </html>
